@@ -1,0 +1,205 @@
+---
+title: "Unit3Assignment"
+author: "Lindsay Gills"
+date: "2026-03-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+# Unit 3 Assignment
+# Author: Lindsay Gills
+
+# Load Libraries
+library(ggplot2)
+library(GGally)
+library(tidyverse)
+library(dtplyr)
+library(tidyr)
+
+# Part 1:
+# Task 1: Using the FIFA player data set, filter the data set to create a dataframe 
+# that has just the Left Midfielders (LM) and Left Forwards (LF).  
+FIFA_Players <- read_csv("C:\\\\Users\\\\pearl\\\\OneDrive\\\\Documents\\\\GradSchoolDoingDataScienceClass\\\\Unit_3\\\\FIFA Players.csv")
+# FIFA dataset
+head(FIFA_Players)
+
+
+summary(FIFA_Players)
+
+# Checking Class
+sapply(FIFA_Players[, c("Weight", "Interceptions", "Aggression", "Agility", "Acceleration")], class)
+ChangingClass <- c("Weight", "Interceptions", "Aggression", "Agility", "Acceleration")
+FIFA_Players[ChangingClass] <- lapply(FIFA_Players[ChangingClass], as.numeric)
+sapply(FIFA_Players[, c("Weight", "Interceptions", "Aggression", "Agility", "Acceleration")], class)
+
+# Checking Null Values
+is.na(FIFA_Players$Weight)
+
+# Omitted missing values
+FIFA_Players_Filtered2 <- na.omit(FIFA_Players)
+is.na(FIFA_Players_Filtered2$Weight)
+
+# Filters data based on position
+
+
+
+# Task 2: Use Ggally and ggpairs() and the dataset you created above above, 
+# to plot the categorical variable Position (LM and LF), versus the continuous 
+# variables Acceleration and AgilityFIFA_Players_Filtered$Position
+FIFA_Players_Filtered <- FIFA_Players %>% filter(Position == 'LM' | Position == 'LF')
+FIFA_Players_Filtered
+#chooses the columns acceleration and agility from the data which is filtered by position 
+# to use with ggpairs
+summary(FIFA_Players)
+FIFA_Players_Filtered %>%
+  select(Acceleration, Agility) %>% ggpairs()
+
+# Task 3: Given the plot above, what relationships do you see?  Comment on these.
+# The scatterplot on the bottom left suggests
+# that there is a positive correlation between acceleration and agility.
+# There appears to be some outliers on the bottom left graph.
+
+# Task 4: Your client would like to formally test if the mean agility rating of left midfielders 
+# is different than that of the left forwards.  
+# Perform a 6 – step t-test to test for the difference in these means.  
+# (You may skip step 2 (draw and shade) if you like. 
+#  If you are unfamiliar with the 6-step hypothesis test, 
+#  see Stat 1 slides or the Bridge Course to review the 6-step hypothesis test.)
+
+# 6 Step Hypothesis Test
+# Step 1: Identify Null and Alternative Hypothesis
+# Null hypothesis: The means of agility ratings for left midfielders and and left forwards are equal.
+# Alternative hypothesis: The means of agility ratings for left midfielders and left forwards are
+# not equal.
+# Skip step 2
+
+# alpha = .1, 0.05 in each tail, Assume standard deviations are equal
+# Step 3: Find the t-test statistic'
+t.test(FIFA_Players$Agility[FIFA_Players$Position == "LM"], FIFA_Players$Agility[FIFA_Players$Position == "LF"])
+
+# Results from Step 3:
+# The t statistic is -2.0126. The degrees of freedom is 14.48. The p-value is 0.06314
+# 95 % confidence level (-8.9821155, 0.2716132)
+# The agility sample mean of the Left Midfielders is 75.37808.
+# The agility sample mean of the Left Forwards is 79.73333.
+
+# Step 4: Find the p-value.
+# The p-value is 0.06314 which is greater than the confidence level (alpha) 0.025.
+# Step 5: Fail to reject the null hypothesis or reject the null hypothesis
+# We will fail to reject the null hypothesis.
+
+# Step 6: Conclusion
+# There is not sufficient evidence to suggest (p-value = 0.06314) that the mean agility ranking of left midfielders
+# is different than the mean agility ranking of Left Forwards. 
+
+# Task 5: If you have not had Stat 1, simply create a histogram of the agility scores for both groups (LM and LF)
+# and given what you know about the CLT, comment on if you believe the sampling distribution
+# of sample means (of your sample size) will be reasonably normal.
+
+FIFA_Players_Filtered %>%
+ggplot(aes(x = Agility, fill = Position)) + 
+  geom_histogram() + ylim(c(0,100)) +
+  facet_wrap(vars(Position))
+
+# Assuming the standard deviations are the same for the agility vs. Left Midfielder and
+# the agility vs. Left Forwards, the sampling distribution of sample means will be reasonably normal.
+# This is according to the Central Limit Theorem.
+
+# Part 2:
+# Select/create at least 2 categorical variables and select two continuous variables 
+# and perform an EDA.  Also, at least one of the categorical variables should be created
+# from a continuous variable (using the cut() function).   
+
+
+# Need to complete: Also, at least one of the categorical variables should be created
+# from a continuous variable (using the cut() function).   
+
+# Filter Data
+FIFA_Players_Filtered3 <- FIFA_Players %>% filter(`Body Type` == "Normal" | `Body Type` == "Stocky" | `Body Type` == "Lean")
+FIFA_Players_Filtered3
+
+
+#Exploring Data
+FIFA_Players_Filtered3 %>%
+  select(Aggression, Interceptions,`Body Type`) %>%
+  ggpairs(mapping = aes(color = `Body Type`))
+
+
+
+# Essential Question:
+# Why do players with a stocky body type not have the smallest number of interceptions?
+
+FIFA_Players_Filtered3 %>% 
+  group_by(`Body Type`) %>% 
+  summarize(median = median(Interceptions))
+# The median number of intercepts is about the same as the other body types.
+
+FIFA_Players_Filtered3 %>% 
+  group_by(`Body Type`) %>% 
+  summarize(median = median(Aggression))
+# The data suggest that the stocky body type players are more aggressive.
+
+FIFA_Players_Filtered3 %>%
+  ggplot(aes(x = Aggression, y = Interceptions, color = `Body Type`)) + 
+  geom_point()
+# The data suggests there is positive correlation between aggression and interceptions.
+
+FIFA_Players_Filtered3 %>% 
+  mutate(lAggression = log(Aggression), lInterceptions = log(Interceptions)) %>%
+  ggplot(aes(x = lAggression, y = lInterceptions)) + 
+  geom_point() +
+  geom_smooth(method = "lm") + 
+  ylim(c(0, 10))
+# residual = observed – expected …
+# residual = actual log price (black dot) – predicted interception (point on blue line). 
+# Now we fit the model:
+  # 𝒍𝒐𝒈(𝒑𝒓𝒊𝒄𝒆)= 𝜷_𝟎+𝜷_𝟏 𝒍𝒐𝒈(𝒄𝒂𝒓𝒂𝒕)+𝜺
+# The line of best fit suggests that stocky players are more aggressive which yields a higher number of interceptions.
+
+# Might include this code?
+# The following produces errors.
+ #FIFA_Players %>%
+  #mutate(resids = exp(fit$residuals)) %>%
+  #ggplot(aes(x = Aggression, y = resids)) + 
+  #geom_point()
+
+#FIFA_Players %>%
+  #mutate(resids = exp(fit$residuals)) %>%
+  #ggplot(aes(x = Aggression, y = resids, color = `Body Type`)) + 
+  #geom_point()
+
+# Scatterplot showing that Aggression vs. Interceptions by Weight Category
+# Stocky players generally weight more, so they are more often classified in the heavy weight cateory.
+# The visual suggests that heavy players which are likely stocky players are more aggressive yielding more interceptions in comparison to lean players.
+  FIFA_Players_Filtered3$Weight <- as.numeric(as.character(FIFA_Players_Filtered3$Weight))
+  displ_Factor = cut(FIFA_Players_Filtered3$Weight, breaks = c(1,150,200,300), labels = c("Light","Medium","Heavy"))
+  
+  FIFA_Players_Filtered3 %>% mutate(displ_Factor = displ_Factor) %>% ggplot(aes(x = Aggression, y = Interceptions, color = displ_Factor)) +geom_point() + 
+    ggtitle("Aggression Vs. Interceptions By Weight Category")
+  
+  # Conclusion to Main Question: Why do stocky players not have the least number of interceptions?
+  # Stocky players do not have the least interceptions because the data suggests they are the most aggressive.
+  # The data suggests there is a positive correlation between aggression and number of interceptions.
+  # Stocky players generally weight more, so they are more often classified in the heavy weight cateory.
+  # Heavy weight players are likely stocky players which the data suggests to more aggressive yielding more interceptions in comparison to lean players.
+
+# Part 3: Takeaways and Question for Live Session
+# Takeaways
+# In unit 3, we learned how to write code using the analogy of writing a sentence. A noun can be thought of as
+# a dataframe. A verb can be thought of as a function. We learned about important functions such as filter, arrange,
+# select, mutate, and isna, and lapply. Filter filters the data for specific values or rows. In contrast, select selects columns from the dataframe.
+# Mutate creates a function for the dataframe.Next we addressed the potential significance outliers and missing values
+# could have on the data. Finally, we learned about the exploratory data analysis process (EDA) which is a creative process
+# that has an essential question in which you need answers to subset questions to answer. 
+
+# Questions:
+# I didn’t have any questions. Everything was pretty clear.
+
+
+
+
+```
+
