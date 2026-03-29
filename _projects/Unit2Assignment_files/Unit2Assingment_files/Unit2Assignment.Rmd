@@ -1,0 +1,149 @@
+---
+title: "Unit2Assignment"
+author: "Lindsay Gills"
+date: "2026-03-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Unit 2 Assignment: Data Visualization
+# Author: Lindsay Gills
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+# Import Player Baseball Dataset CSV file
+PlayersBBallCopy <- read.csv("PlayersBBallCopy.csv", header = TRUE)
+PlayersBBallCopy
+
+# Problem 1
+# Use the PlayerBBall.csv dataset to visually represent (summarize) the number of players in each position. 
+# Bar plot to show the number of baseball players in each position
+PlayersBBallCopy %>% ggplot(aes(x = position)) + geom_bar() + ggtitle("Number of Baseball Players in Each Position")
+
+
+# Problem 2
+# Use the dataset to visually investigate the distribution of the weight of centers (C)
+# is greater than the distribution of the weight of forwards (F).  
+# The distribution of the weight of centers is greater than the distribution of the weight of forwards as shown visually
+# with the barplots.Data (x values) are numeric and continuous, so barplot should be used instead of a histogram.
+
+PlayersBBallCopy[PlayersBBallCopy$position == "C" | PlayersBBallCopy$position == "F",] %>% ggplot(aes(x = weight, fill = position)) + 
+  geom_bar() + ggtitle("Distribution of Weight for Centers and Forwards") 
+
+PlayersBBallCopy[PlayersBBallCopy$position == "C",] %>% ggplot(aes(x = weight, fill = position)) + 
+  geom_bar() + ggtitle("Distribution of Weight for Centers")
+
+PlayersBBallCopy[PlayersBBallCopy$position == "F",] %>% ggplot(aes(x = weight, fill = position)) + 
+  geom_bar() + ggtitle("Distribution of Weight for Forwards")
+
+# Problem 3
+# The distribution of the height of centers is greater than the distribution of the height of forwards as shown visually
+# with the barplots.Data (x values) are numeric and continuous, so barplot should be used instead of a histogram.
+
+PlayersBBallCopy[PlayersBBallCopy$position == "C" | PlayersBBallCopy$position == "F",] %>% ggplot(aes(x = height, fill = position)) + 
+  geom_bar()+ ggtitle("Distribution of Height for Centers and Forwards") 
+
+PlayersBBallCopy[PlayersBBallCopy$position == "C",] %>% ggplot(aes(x = weight, fill = position)) + 
+  geom_bar()+ ggtitle("Distribution of Height for Centers")
+
+PlayersBBallCopy[PlayersBBallCopy$position == "F",] %>% ggplot(aes(x = weight, fill = position)) + 
+  geom_bar()+ ggtitle("Distribution of Height for Forwards")
+
+
+# Problem 4
+# Use the dataset to visually investigate if the distribution of height is different between any of the positions.  
+# The distributions of height is different between the positions. Position F is the greatest height followed by position G.
+# Position C-F is the smallest height.
+# Issue: For some reason, stat = identity is not giving me y values for the height on the yaxis.
+
+#PlayersBBallCopy %>% ggplot(aes(x = position, y = height)) + 
+  #geom_bar(stat = "identity") + ggtitle("Height for Different Baseball Positions") +
+  #ylab("height")
+
+# Problem 5
+# Use the dataset to investigate how the player’s height is related to the player’s weight. How does height change as the weight changes?  
+# Issue: R read in the height as a data. For instance for the first value, 6-10, R is reading this as June 10. 
+# I have tried debugging this. I know to fix this error you must use the dplyr package and apply conditional replacements.
+
+# Attempt to debug
+# h = PlayersBBallCopy$height[PlayersBBallCopy$height == "Jun"] <- c(6)
+# h
+
+# Code if error was fixed.
+# There is a positive correlation between weight and height.
+#PlayersBBallCopy %>% ggplot(aes(x = weight, y = height)) + geom_point() + 
+  #ggtitle("Baseball Players Height vs. Weight")
+
+# Problem 6
+# Is their any difference in the relationship between height and weight between positions?  
+# Are height and weight related differently for different positions.
+# Yes, there is a relationship between height and weight between positions. 
+# The center has the greatest weight and height.
+
+# Code if error for problem 4 was fixed.
+#ggplot(data = PlayersBBallCopy) + geom_point(mapping = aes(x = weight, y = height)) +
+  #geom_point() + 
+  #ggtitle("Baseball Players Height vs. Weight")
+
+# Problem 7
+# A historian would like to investigate the claim that the heights of players have increased over the years.  
+# Analyze this claim graphically / visually. 
+# There is a positive correlation between time and height. As time increases, height increases.
+#PlayersBBallCopy %>% ggplot(aes(x = year_end, y = height)) + geom_point() + 
+  #ggtitle("Years vs. Baseball Players' Heights")
+
+# Problem 8
+# Create a 3D plot of height vs. weight vs. year and color code the points by position. 
+#p <- plot_ly(PlayersBBallCopy, x = ~height, y = ~weight, z = ~year_end, color = ~position) %>%
+  #add_markers() %>%
+  #layout(scene = list(xaxis = list(title = 'Height'),
+                      #yaxis = list(title = 'Weight'),
+                      #zaxis = list(title = 'Position')))
+#p
+
+
+# Problem 9
+# Go to this website and use one of the 50 best plots to visualize some aspect of the data
+# and provide at least one insight.  You will present your work in breakout!
+# http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html
+
+# Keep getting error
+#PlayersBBallCopyPieChart <- as.data.frame(table(PlayersBBallCopy$position))
+#colnames(PlayersBBallCopyPieChart) <- c("position", "freq")
+#PositionPieChart <- ggplot(PlayersBBallCopyPieChart, aes(x = "", y = freq, fill = factor(position))) +
+  #geom_bar(width = 1, stat = identity()) +
+  #theme(axis.line = element_blank(),
+        #plot.title = element_text(hjust = 0.5)) +
+  #labs(fill = "position")
+      #x = position
+      #title = "Baseball Positions"
+      
+# Problem 10
+# Separate dataset:  The EducationIncome.csv dataset has incomes of randomly selected Americans 
+# and their level of education.  
+# Visually test the claim that the distribution of incomes increase (mean or median) as the education level rises. 
+
+# Problem 11: Unit 2 Key Takeaways and Questions and Comments
+# In chapter 2, we learned how to visualize data using the package ggplot2 added with a pipe.
+# We created bar plots, histograms, boxplots, scatterplots, and 3D plots using Plotly. 
+# With these visualizations, we learned how to neatly format the
+# the visuals using aestethics (aes). In addition, we learned how to color visuals 
+# (coloring by variable) by using mapping.
+
+# Question (error from problem 5):
+# Issue: R read in the height as a data. For instance for the first value, 6-10, R is reading this as June 10. 
+# I have tried debugging this. I know to fix this error you must use the dplyr package
+# and apply conditional replacements. I am confused on how to do this.
+
+  
+
+
+
+
+
+```
+
