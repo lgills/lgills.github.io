@@ -18,7 +18,7 @@ library(dplyr)
 library(tidyr)
 # Import Player Baseball Dataset CSV file
 PlayersBBallCopy <- read.csv("PlayersBBallCopy.csv", header = TRUE)
-PlayersBBallCopy
+head(PlayersBBallCopy)
 
 # Problem 1
 # Use the PlayerBBall.csv dataset to visually represent (summarize) the number of players in each position. 
@@ -85,10 +85,11 @@ PlayersBBallCopy %>% ggplot(aes(x = weight, y = height)) + geom_point() +
 # Yes, there is a relationship between height and weight between positions. 
 # The center has the greatest weight and height.
 
-# Code if error for problem 4 was fixed.
-ggplot(data = PlayersBBallCopy) + geom_point(mapping = aes(x = weight, y = height, color = drv)) +
-  geom_point() + 
-  ggtitle("Baseball Players Height vs. Weight")
+# Code if error for problem 4 was fixed. Used regular expressions to solve this in
+# later assignment.
+#ggplot(data = PlayersBBallCopy) + geom_point(mapping = aes(x = weight, y = height, color = drv)) +
+  # geom_point() + 
+  # ggtitle("Baseball Players Height vs. Weight")
 
 # Problem 7
 # A historian would like to investigate the claim that the heights of players have increased over the years.  
@@ -99,12 +100,12 @@ PlayersBBallCopy %>% ggplot(aes(x = year_end, y = height)) + geom_point() +
 
 # Problem 8
 # Create a 3D plot of height vs. weight vs. year and color code the points by position. 
-p <- plot_ly(PlayersBBallCopy, x = ~height, y = ~weight, z = ~year_end, color = ~position) %>%
-  add_markers() %>%
-  layout(scene = list(xaxis = list(title = 'Height'),
-                      yaxis = list(title = 'Weight'),
-                      zaxis = list(title = 'Position')))
-p
+# p <- plot_ly(PlayersBBallCopy, x = ~height, y = ~weight, z = ~year_end, color = ~position) %>%
+  # add_markers() %>%
+  #layout(scene = list(xaxis = list(title = 'Height'),
+                      #yaxis = list(title = 'Weight'),
+                      #zaxis = list(title = 'Position')))
+#p
 
 
 # Problem 9
@@ -113,15 +114,14 @@ p
 # http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html
 
 # Keep getting error
-PlayersBBallCopyPieChart <- as.data.frame(table(PlayersBBallCopy$position))
-colnames(PlayersBBallCopyPieChart) <- c("position", "freq")
-PositionPieChart <- ggplot(PlayersBBallCopyPieChart, aes(x = "", y = freq, fill = factor(position))) +
-  geom_bar(width = 1, stat = identity()) +
-  theme(axis.line = element_blank(),
-        plot.title = element_text(hjust = 0.5)) +
-  labs(fill = "position")
-      x = position
-      title = "Baseball Positions"
+#PlayersBBallCopyPieChart <- as.data.frame(table(PlayersBBallCopy$position))
+#colnames(PlayersBBallCopyPieChart) <- c("position", "freq")
+#PositionPieChart <- ggplot(PlayersBBallCopyPieChart, aes(x = position, y = freq, fill #= factor(position))) +
+  #geom_bar(width = 1, stat = identity()) +
+  #theme(axis.line = element_blank(),
+        #plot.title = element_text(hjust = 0.5)) +
+  #labs(fill = "position",
+      #title = "Baseball Positions")
       
 # Problem 10
 # Separate dataset:  The EducationIncome.csv dataset has incomes of randomly selected Americans 
